@@ -1,0 +1,120 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build & Release DMG
+    runs-on: macos-14
+    timeout-minutes: 30
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '15'
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        run: xcodegen generate
+
+      - name: Resolve SPM dependencies
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project SalahTime.xcodeproj \
+            -scheme SalahTime \
+            -clonedSourcePackagesDirPath .spm-cache
+
+      - name: Run Tests
+        run: |
+          xcodebuild test \
+            -project SalahTime.xcodeproj \
+            -scheme SalahTimeTests \
+            -destination 'platform=macOS' \
+            -clonedSourcePackagesDirPath .spm-cache \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO
+
+      - name: Extract version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Archive
+        run: |
+          xcodebuild archive \
+            -project SalahTime.xcodeproj \
+            -scheme SalahTime \
+            -archivePath build/SalahTime.xcarchive \
+            -destination 'platform=macOS' \
+            -clonedSourcePackagesDirPath .spm-cache \
+            -configuration Release \
+            -quiet \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            MARKETING_VERSION="${{ steps.version.outputs.VERSION }}"
+
+      - name: Export app from archive
+        run: |
+          mkdir -p build/export
+          cp -R "build/SalahTime.xcarchive/Products/Applications/SalahTime.app" "build/export/"
+
+      - name: Create DMG
+        run: |
+          mkdir -p dist
+          hdiutil create \
+            -volname "SalahTime" \
+            -srcfolder "build/export/SalahTime.app" \
+            -ov \
+            -format UDZO \
+            "dist/SalahTime-${{ steps.version.outputs.VERSION }}.dmg"
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          # Get commits since last tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          if [ -n "$PREV_TAG" ]; then
+            NOTES=$(git log --pretty=format:"- %s" "$PREV_TAG"..HEAD)
+          else
+            NOTES=$(git log --pretty=format:"- %s" HEAD~10..HEAD 2>/dev/null || git log --pretty=format:"- %s")
+          fi
+
+          # Write to file for the release action
+          cat > release_notes.md << 'HEREDOC'
+          ## 🕌 Salah Time ${{ steps.version.outputs.VERSION }}
+
+          ### Changes
+          HEREDOC
+          echo "$NOTES" >> release_notes.md
+          cat >> release_notes.md << 'HEREDOC'
+
+          ---
+
+          ### Installation
+          1. Download `SalahTime-${{ steps.version.outputs.VERSION }}.dmg`
+          2. Open the DMG and drag **Salah Time** to Applications
+          3. Launch from Applications — the ☪ icon appears in your menubar
+
+          > ⚠️ This build is **unsigned**. On first launch, right-click → Open to bypass Gatekeeper.
+          HEREDOC
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: release_notes.md
+          files: dist/SalahTime-${{ steps.version.outputs.VERSION }}.dmg
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -9,6 +9,34 @@ Step-by-step guide to set up the Salah Time Xcode project. This only needs to be
 
 ---
 
+## Quick Start with xcodegen (Recommended)
+
+If you have [xcodegen](https://github.com/yonaskolb/XcodeGen) installed, you can skip all manual steps:
+
+```bash
+# Install xcodegen (one-time)
+brew install xcodegen
+
+# Generate the Xcode project from project.yml
+xcodegen generate
+
+# Open and run
+open SalahTime.xcodeproj
+# Press ⌘R to build and run
+# Press ⌘U to run tests
+```
+
+This auto-configures:
+- ✅ App target with all source files
+- ✅ Test target (`SalahTimeTests`)
+- ✅ `adhan-swift` SPM dependency
+- ✅ Info.plist keys (LSUIElement, location permission)
+- ✅ macOS 14 deployment target
+
+> If you prefer manual setup or don't want to install xcodegen, follow the steps below.
+
+---
+
 ## Step 1: Create the Xcode Project
 
 1. Open **Xcode**

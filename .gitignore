@@ -17,10 +17,14 @@ DerivedData/
 *.perspectivev3
 !default.perspectivev3
 
+# Generated Xcode project (recreate via: xcodegen generate)
+SalahTime.xcodeproj/
+
 # Swift Package Manager
 .build/
 .swiftpm/
 Package.resolved
+.spm-cache/
 
 # macOS
 .DS_Store
@@ -38,5 +42,11 @@ Icon?
 *.app
 *.dmg
 
+# Test Results
+*.xcresult
+
 # Distribution
 dist/
+
+# Folder
+Docs/Artifact/*
