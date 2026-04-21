@@ -79,13 +79,13 @@ enum SalahTypography {
 // MARK: - Spacing & Layout
 
 enum SalahLayout {
-    static let popoverWidth: CGFloat = 320
-    static let popoverMaxHeight: CGFloat = 520
+    static let popoverWidth: CGFloat = 340
+    static let popoverMaxHeight: CGFloat = 620
     static let cornerRadius: CGFloat = 12
     static let cornerRadiusSmall: CGFloat = 8
-    static let cardPadding: CGFloat = 14
-    static let sectionSpacing: CGFloat = 12
-    static let itemSpacing: CGFloat = 8
+    static let cardPadding: CGFloat = 12
+    static let sectionSpacing: CGFloat = 10
+    static let itemSpacing: CGFloat = 6
     static let iconSize: CGFloat = 20
 }
 
@@ -141,6 +141,26 @@ struct GoldHighlightCard: ViewModifier {
 
 // MARK: - View Extensions
 
+/// Native Apple glassmorphism using system materials
+struct AppleGlassCard: ViewModifier {
+    var cornerRadius: CGFloat = SalahLayout.cornerRadius
+
+    func body(content: Content) -> some View {
+        content
+            .background(
+                RoundedRectangle(cornerRadius: cornerRadius)
+                    .fill(.ultraThinMaterial)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: cornerRadius)
+                            .strokeBorder(
+                                Color.white.opacity(0.1),
+                                lineWidth: 0.5
+                            )
+                    )
+            )
+    }
+}
+
 extension View {
     func glassCard(cornerRadius: CGFloat = SalahLayout.cornerRadius) -> some View {
         modifier(GlassCard(cornerRadius: cornerRadius))
@@ -148,6 +168,11 @@ extension View {
 
     func goldCard() -> some View {
         modifier(GoldHighlightCard())
+    }
+
+    /// Native Apple transparent glassmorphism
+    func appleGlassCard(cornerRadius: CGFloat = SalahLayout.cornerRadius) -> some View {
+        modifier(AppleGlassCard(cornerRadius: cornerRadius))
     }
 }
 

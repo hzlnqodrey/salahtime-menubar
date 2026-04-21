@@ -1,6 +1,14 @@
+//
+//  SettingsView.swift
+//  SalahTime
+//
+//  Created by Hazlan Muhammad Qodri on 21/04/26.
+//
+
 import SwiftUI
 import AppKit
 import ServiceManagement
+import UniformTypeIdentifiers
 
 // MARK: - Settings View
 
@@ -14,8 +22,8 @@ struct SettingsView: View {
     @State private var cityText: String = ""
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: SalahLayout.sectionSpacing) {
+        ScrollView(.vertical, showsIndicators: false) {
+            VStack(spacing: 8) {
                 // Header
                 settingsHeader
 
@@ -40,8 +48,8 @@ struct SettingsView: View {
                 // App Info
                 appInfoSection
             }
-            .padding(.horizontal, SalahLayout.cardPadding)
-            .padding(.bottom, SalahLayout.cardPadding)
+            .padding(.horizontal, 10)
+            .padding(.bottom, 10)
         }
     }
 
@@ -269,20 +277,20 @@ struct SettingsSection<Content: View>: View {
     @ViewBuilder let content: () -> Content
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(spacing: 6) {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 5) {
                 Image(systemName: icon)
-                    .font(.system(size: 11))
+                    .font(.system(size: 10))
                     .foregroundStyle(SalahColors.tealAccent)
                 Text(title)
                     .font(SalahTypography.captionMedium)
                     .foregroundStyle(SalahColors.tealAccent)
             }
 
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 6) {
                 content()
             }
-            .padding(SalahLayout.cardPadding)
+            .padding(10)
             .glassCard(cornerRadius: SalahLayout.cornerRadiusSmall)
         }
     }

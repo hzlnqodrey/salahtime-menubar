@@ -1,3 +1,10 @@
+//
+//  SalahTimeApp.swift
+//  SalahTime
+//
+//  Created by Hazlan Muhammad Qodri on 19/04/26.
+//
+
 import SwiftUI
 import ServiceManagement
 
@@ -6,12 +13,12 @@ import ServiceManagement
 @main
 struct SalahTimeApp: App {
     // MARK: - State
-
+    
     @State private var prayerManager = PrayerTimeManager()
     @State private var locationManager = LocationManager()
     @State private var notificationManager = NotificationManager()
     @State private var settings = AppSettings.shared
-
+    
     var body: some Scene {
         MenuBarExtra {
             PopoverView()
@@ -23,44 +30,36 @@ struct SalahTimeApp: App {
         }
         .menuBarExtraStyle(.window)
     }
-
+    
     // MARK: - Menubar Label
-
+    
     @ViewBuilder
     private var menuBarLabel: some View {
         switch settings.menuBarDisplayMode {
         case .iconOnly:
-            Label("Salah Time", systemImage: "star.and.crescent")
+            Label("Salah Time", systemImage: "moon.stars.fill")
                 .labelStyle(.iconOnly)
-
+            
         case .iconAndPrayer:
             if let next = prayerManager.nextPrayer {
                 HStack(spacing: 4) {
-                    Image(systemName: "star.and.crescent")
+                    Image(systemName: "moon.stars.fill")
                     Text("\(next.prayer.englishName) \(prayerManager.countdownString)")
                         .font(.system(size: 12, weight: .medium, design: .monospaced))
                 }
-            } else {
-                Label("Salah Time", systemImage: "star.and.crescent")
+            }
+            else {
+                Label("Salah Time", systemImage: "moon.stars.fill")
                     .labelStyle(.iconOnly)
             }
-
-        case .iconAndTime:
-            if let next = prayerManager.nextPrayer {
-                HStack(spacing: 4) {
-                    Image(systemName: "star.and.crescent")
-                    Text(next.formattedTime)
-                        .font(.system(size: 12, weight: .medium, design: .monospaced))
-                }
-            } else {
-                Label("Salah Time", systemImage: "star.and.crescent")
-                    .labelStyle(.iconOnly)
-            }
+        default:
+            Label("Salah Time", systemImage: "moon.stars.fill")
+                .labelStyle(.iconOnly)
         }
     }
-
+    
     // MARK: - Init
-
+    
     init() {
         // Register for launch at login if enabled
         if AppSettings.shared.launchAtLogin {

@@ -58,7 +58,7 @@ struct QiblaCompassView: View {
                 }
 
                 HStack(spacing: 3) {
-                    Image(systemName: "kaaba.fill")
+                    Image(systemName: "location.north.fill")
                         .font(.system(size: 10))
                     Text("Makkah")
                         .font(SalahTypography.caption)

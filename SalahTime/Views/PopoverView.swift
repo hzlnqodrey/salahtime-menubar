@@ -14,8 +14,13 @@ struct PopoverView: View {
 
     var body: some View {
         ZStack {
-            // Background
-            SalahColors.backgroundGradient
+            // Background: Native Apple glassmorphism with emerald tint
+            Rectangle()
+                .fill(.ultraThinMaterial)
+                .ignoresSafeArea()
+
+            // Subtle emerald tint overlay
+            SalahColors.deepEmerald.opacity(0.75)
                 .ignoresSafeArea()
 
             // Islamic pattern overlay
@@ -47,7 +52,8 @@ struct PopoverView: View {
                             Spacer()
                         }
                         .padding(.horizontal, SalahLayout.cardPadding)
-                        .padding(.top, SalahLayout.cardPadding)
+                        .padding(.top, 8)
+                        .padding(.bottom, 4)
 
                         SettingsView(settings: settings)
                     }
