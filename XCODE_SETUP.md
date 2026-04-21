@@ -179,3 +179,4 @@ chmod +x scripts/build-dmg.sh
 ```
 
 The `.dmg` will be created in `dist/SalahTime.dmg`.
+ 
